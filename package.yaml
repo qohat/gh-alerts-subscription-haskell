@@ -21,6 +21,25 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- servant #http
+- hspec #tests
+- mtl #monad transformers
+- async #Async
+- time #DateTime manager
+- text #Overriding strings
+- uuid #UUID
+- exceptions
+- postgresql-simple
+- postgresql-simple-migration
+- resource-pool #Thread pools
+- aeson #Json
+- servant-server #Server connector
+- katip #Loggin
+- wai # http security - management
+- wai-cors # http security - management
+- warp #  http security - management
+- lens # Optics lens
+- hw-kafka-client
 
 library:
   source-dirs: src

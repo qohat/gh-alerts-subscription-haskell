@@ -10,4 +10,4 @@ proxy = Proxy
 
 main :: IO ()
 main = run 8080 . serve proxy $ HTTP.subscriptionServer
--- TODO add some login
+-- TODO add some loggin

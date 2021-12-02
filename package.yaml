@@ -39,7 +39,9 @@ dependencies:
 - wai-cors # http security - management
 - warp #  http security - management
 - lens # Optics lens
-- hw-kafka-client
+- bytestring #String like steams
+- bytestring-conversion # bytestring conversion
+# - hw-kafka-client
 
 library:
   source-dirs: src

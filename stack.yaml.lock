@@ -11,13 +11,6 @@ packages:
       sha256: 186c759339e91c18b51879a5795f6cf8db2639001eb6b0e7c017d90e5dfa6ab2
   original:
     hackage: postgresql-simple-migration-0.1.15.0
-- completed:
-    hackage: hw-kafka-client-3.1.2@sha256:f0f8043bb13d75f5a6d82790740a84c5b1f2c27cd21a43a84c93583882cf8843,4861
-    pantry-tree:
-      size: 2057
-      sha256: 8269acbb5b9315adb88c28cf45972af774761f339b52821fc9da2e7af74833ec
-  original:
-    hackage: hw-kafka-client-3.1.2
 snapshots:
 - completed:
     size: 531696

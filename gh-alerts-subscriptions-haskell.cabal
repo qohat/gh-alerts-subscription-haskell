@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Http.SubscriptionRouting
       Lib
   other-modules:
       Paths_gh_alerts_subscriptions_haskell
@@ -34,9 +35,10 @@ library
       aeson
     , async
     , base >=4.7 && <5
+    , bytestring
+    , bytestring-conversion
     , exceptions
     , hspec
-    , hw-kafka-client
     , katip
     , lens
     , mtl
@@ -64,10 +66,11 @@ executable gh-alerts-subscriptions-haskell-exe
       aeson
     , async
     , base >=4.7 && <5
+    , bytestring
+    , bytestring-conversion
     , exceptions
     , gh-alerts-subscriptions-haskell
     , hspec
-    , hw-kafka-client
     , katip
     , lens
     , mtl
@@ -96,10 +99,11 @@ test-suite gh-alerts-subscriptions-haskell-test
       aeson
     , async
     , base >=4.7 && <5
+    , bytestring
+    , bytestring-conversion
     , exceptions
     , gh-alerts-subscriptions-haskell
     , hspec
-    , hw-kafka-client
     , katip
     , lens
     , mtl

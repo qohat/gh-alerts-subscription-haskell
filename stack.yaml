@@ -41,7 +41,7 @@ packages:
 #
 extra-deps:
   - postgresql-simple-migration-0.1.15.0
-  - hw-kafka-client-3.1.2
+#  - hw-kafka-client-3.1.2
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

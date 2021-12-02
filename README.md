@@ -1,0 +1,1 @@
+# gh-alerts-subscriptions-haskell

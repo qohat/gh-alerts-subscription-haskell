@@ -1,11 +1,11 @@
 module Main where
 
-import qualified Http.SubscriptionRouting as HTTP
 import Network.Wai.Handler.Warp (run)
 import Servant (serve)
 import Data.Proxy (Proxy (..))
+import qualified Http.Api as HTTP
 
-proxy :: Proxy HTTP.SubscriptionAPI
+proxy :: Proxy HTTP.API
 proxy = Proxy
 
 main :: IO ()

@@ -9,12 +9,13 @@ import Servant
     ( type (:>),
       Capture,
       Get,
+      Delete,
       JSON,
       Server,
       Handler,
       type (:<|>)(..),
       ReqBody,
-      PutCreated )
+      PutCreated, NoContent (NoContent) )
 import Data.Text (Text, pack)
 import Data.Time (ZonedTime)
 import Control.Monad.Cont (MonadIO(liftIO))
@@ -25,17 +26,19 @@ import GHC.TypeLits
 type SimpleAPI (path :: Symbol) a i = path :> 
     (   
     Capture "id" i :> Get '[JSON] [a] :<|>
-    Capture "id" i :> ReqBody '[JSON] a :> PutCreated '[JSON] ()
+    Capture "id" i :> ReqBody '[JSON] a :> PutCreated '[JSON] () :<|>
+    Capture "id" i :> ReqBody '[JSON] a :> Delete '[JSON] NoContent
     )
 
 simpleServer :: 
     (i -> Handler [a]) ->
     (i -> a -> Handler ()) ->
+    (i -> a -> Handler NoContent) ->
     Server (SimpleAPI name a i)
 
-simpleServer allA putA = allA :<|> putA
+simpleServer allA putA delA = allA :<|> putA :<|> delA
 
-type SubsUserId = Text
+type UserId = Text
 
 data Subscription = Subscription
     {
@@ -54,12 +57,13 @@ subscriptions = [
         Subscription (pack "47degrees") (pack "github4s") (pack "2021-05-01T09:15:05")
     ]
     
-subscriptionServer :: Server (SimpleAPI "subscription" Subscription SubsUserId)
+subscriptionServer :: Server (SimpleAPI "subscription" Subscription UserId)
 subscriptionServer = simpleServer
     (\userId -> return subscriptions) -- TODO build this function differently fofr handling errors
     (\userId subscription -> return ()) -- TODO build this function differently fofr handling errors
+    (\userId subscription -> return NoContent) -- TODO build this function differently fofr handling errors
 
 -- Main API
-type API = SimpleAPI "subscription" Subscription SubsUserId
+type API = SimpleAPI "subscription" Subscription UserId
 
 

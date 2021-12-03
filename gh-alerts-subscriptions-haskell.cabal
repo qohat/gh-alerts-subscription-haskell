@@ -25,7 +25,7 @@ source-repository head
 
 library
   exposed-modules:
-      Http.SubscriptionRouting
+      Http.Api
       Lib
   other-modules:
       Paths_gh_alerts_subscriptions_haskell

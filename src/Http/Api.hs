@@ -56,8 +56,8 @@ subscriptions = [
     
 subscriptionServer :: Server (SimpleAPI "subscription" Subscription SubsUserId)
 subscriptionServer = simpleServer
-    (\userId -> return subscriptions)
-    (\userId subscription -> return ())
+    (\userId -> return subscriptions) -- TODO build this function differently fofr handling errors
+    (\userId subscription -> return ()) -- TODO build this function differently fofr handling errors
 
 -- Main API
 type API = SimpleAPI "subscription" Subscription SubsUserId

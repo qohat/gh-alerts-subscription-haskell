@@ -34,6 +34,7 @@ dependencies:
 - resource-pool #Thread pools
 - aeson #Json
 - servant-server #Server connector
+- http-api-data # For x-www-form-urlencoded FromForm and ToForm
 - katip #Loggin
 - wai # http security - management
 - wai-cors # http security - management

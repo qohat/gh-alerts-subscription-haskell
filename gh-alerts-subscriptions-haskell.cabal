@@ -39,6 +39,7 @@ library
     , bytestring-conversion
     , exceptions
     , hspec
+    , http-api-data
     , katip
     , lens
     , mtl
@@ -71,6 +72,7 @@ executable gh-alerts-subscriptions-haskell-exe
     , exceptions
     , gh-alerts-subscriptions-haskell
     , hspec
+    , http-api-data
     , katip
     , lens
     , mtl
@@ -104,6 +106,7 @@ test-suite gh-alerts-subscriptions-haskell-test
     , exceptions
     , gh-alerts-subscriptions-haskell
     , hspec
+    , http-api-data
     , katip
     , lens
     , mtl

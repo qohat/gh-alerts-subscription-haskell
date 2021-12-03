@@ -15,7 +15,7 @@ import Servant
       Handler,
       type (:<|>)(..),
       ReqBody,
-      PutCreated, NoContent (NoContent) )
+      PutCreated, NoContent (NoContent), PostAccepted )
 import Data.Text (Text, pack)
 import Data.Time (ZonedTime)
 import Control.Monad.Cont (MonadIO(liftIO))
@@ -27,16 +27,18 @@ type SimpleAPI (path :: Symbol) a i = path :>
     (   
     Capture "id" i :> Get '[JSON] [a] :<|>
     Capture "id" i :> ReqBody '[JSON] a :> PutCreated '[JSON] () :<|>
-    Capture "id" i :> ReqBody '[JSON] a :> Delete '[JSON] NoContent
+    Capture "id" i :> ReqBody '[JSON] a :> Delete '[JSON] NoContent :<|>
+    "slack" :> "command" :> ReqBody '[JSON] a :> PostAccepted '[JSON] ()
     )
 
 simpleServer :: 
     (i -> Handler [a]) ->
     (i -> a -> Handler ()) ->
     (i -> a -> Handler NoContent) ->
+    (a -> Handler ()) ->
     Server (SimpleAPI name a i)
 
-simpleServer allA putA delA = allA :<|> putA :<|> delA
+simpleServer allA putA delA postA = allA :<|> putA :<|> delA :<|> postA
 
 type UserId = Text
 
@@ -62,6 +64,7 @@ subscriptionServer = simpleServer
     (\userId -> return subscriptions) -- TODO build this function differently fofr handling errors
     (\userId subscription -> return ()) -- TODO build this function differently fofr handling errors
     (\userId subscription -> return NoContent) -- TODO build this function differently fofr handling errors
+    (\subscriptions -> return ()) -- TODO build this function differently fofr handling errors
 
 -- Main API
 type API = SimpleAPI "subscription" Subscription UserId

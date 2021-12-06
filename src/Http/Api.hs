@@ -24,23 +24,6 @@ import GHC.Generics (Generic)
 import GHC.TypeLits
 import Web.Internal.FormUrlEncoded (FromForm)
 
-type SubscriptionAPI = "subscription" :> 
-    (   
-    Capture "id" UserId :> Get '[JSON] [Subscription] :<|>
-    Capture "id" UserId :> ReqBody '[JSON] Subscription :> PutCreated '[JSON] () :<|>
-    Capture "id" UserId :> ReqBody '[JSON] Subscription :> Delete '[JSON] NoContent :<|>
-    "slack" :> "command" :> ReqBody '[FormUrlEncoded] SubscriptionCommand :> PostAccepted '[JSON] ()
-    )
-
-subscriptionRouter :: 
-    (UserId -> Handler [Subscription]) ->
-    (UserId -> Subscription -> Handler ()) ->
-    (UserId -> Subscription -> Handler NoContent) ->
-    (SubscriptionCommand -> Handler ()) ->
-    Server SubscriptionAPI
-
-subscriptionRouter allA putA delA postA = allA :<|> putA :<|> delA :<|> postA
-
 type UserId = Text
 
 data Subscription = Subscription
@@ -50,7 +33,7 @@ data Subscription = Subscription
         subscribe_at :: Text -- TODO manage this as a ZonedTime from haskell
     } deriving Generic
 
-data SubscriptionCommand = SubscriptionCommand 
+data SubscriptionCommand = SubscriptionCommand
     {
         token :: Text,
         command :: Text,
@@ -65,12 +48,53 @@ data SubscriptionCommand = SubscriptionCommand
         channel_name :: Text,
         user_name :: Text,
         api_app_id :: Text
+    } deriving (Show, Generic)
+
+data ResponseType = InChannel | Ephemeral deriving Generic
+
+newtype BlockType = BlockType Text deriving Generic
+data BlockText = BlockText { blockTextType :: Text, blockTextText :: Text} deriving Generic
+data Block = Block { block_type :: BlockType, block_text :: BlockText } deriving Generic
+
+data SubscriptionCommandResponse = SubscriptionCommandResponse
+    {
+        response_type :: ResponseType,
+        response_text :: Text,
+        blocks :: [Block]
     } deriving Generic
+
+subscriptionCommandResponse :: SubscriptionCommand -> SubscriptionCommandResponse
+subscriptionCommandResponse c = do
+    let name = channel_name c
+    SubscriptionCommandResponse Ephemeral name [Block (BlockType (pack "section")) BlockText {blockTextType=pack "mrkdwn", blockTextText=pack "*It's 80 degrees right now.*"} ]
 
 instance ToJSON Subscription
 instance FromJSON Subscription
 
 instance FromForm SubscriptionCommand
+
+instance ToJSON ResponseType
+instance ToJSON BlockType
+instance ToJSON BlockText
+instance ToJSON Block
+instance ToJSON SubscriptionCommandResponse
+
+type SubscriptionAPI = "subscription" :>
+    (
+    Capture "id" UserId :> Get '[JSON] [Subscription] :<|>
+    Capture "id" UserId :> ReqBody '[JSON] Subscription :> PutCreated '[JSON] () :<|>
+    Capture "id" UserId :> ReqBody '[JSON] Subscription :> Delete '[JSON] NoContent :<|>
+    "slack" :> "command" :> ReqBody '[FormUrlEncoded] SubscriptionCommand :> PostAccepted '[JSON] SubscriptionCommandResponse
+    )
+
+subscriptionRouter ::
+    (UserId -> Handler [Subscription]) ->
+    (UserId -> Subscription -> Handler ()) ->
+    (UserId -> Subscription -> Handler NoContent) ->
+    (SubscriptionCommand -> Handler SubscriptionCommandResponse) ->
+    Server SubscriptionAPI
+
+subscriptionRouter allA putA delA postA = allA :<|> putA :<|> delA :<|> postA
 
 subscriptions :: [Subscription]
 subscriptions = [
@@ -78,15 +102,14 @@ subscriptions = [
         Subscription (pack "higherkindness") (pack "skeuomorph") (pack "2021-04-26T15:45:25"),
         Subscription (pack "47degrees") (pack "github4s") (pack "2021-05-01T09:15:05")
     ]
-    
+
 subscriptionServer :: Server SubscriptionAPI
 subscriptionServer = subscriptionRouter
     (\userId -> return subscriptions) -- TODO build this function differently fofr handling errors
     (\userId subscription -> return ()) -- TODO build this function differently fofr handling errors
     (\userId subscription -> return NoContent) -- TODO build this function differently fofr handling errors
-    (\subscriptions -> return ()) -- TODO build this function differently fofr handling errors
+    (return . subscriptionCommandResponse) -- TODO build this function differently fofr handling errors
 
 -- Main API
 type API = SubscriptionAPI
-
 

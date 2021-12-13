@@ -1,1 +1,1 @@
-ALTER DATABASE github_subscriptions SET timezone TO 'America/Bogota';
+ALTER DATABASE github_subscription SET timezone TO 'America/Bogota';

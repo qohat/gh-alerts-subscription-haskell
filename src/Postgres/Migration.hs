@@ -1,20 +1,32 @@
 module Postgres.Migration where
-import Database.PostgreSQL.Simple (connectPostgreSQL, withTransaction)
-import Database.PostgreSQL.Simple.Migration (MigrationContext(MigrationContext), MigrationCommand (MigrationDirectory), runMigration, MigrationResult)
-import qualified Data.ByteString.Char8 as BS
 
-data PgConfig = PgConfig {
-    host :: String,
-    port :: Integer,
-    database :: String,
-    user :: String,
-    password :: String
-}
+import Control.Exception (Exception)
+import Control.Monad.Catch (Exception, MonadThrow (..))
+import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Pool (Pool, withResource)
+import Data.Typeable (Typeable)
+import qualified Database.PostgreSQL.Simple as PG
+import qualified Database.PostgreSQL.Simple.Migration as M
 
-migrate :: IO (MigrationResult String)
-migrate = do
-    let url = "host=localhost dbname=github_subscription user=postgres password=haskell"
-    let dir = "db/migrations"
-    con <- connectPostgreSQL (BS.pack url)
-    withTransaction con $ runMigration $
-        MigrationContext (MigrationDirectory dir) False con
+migrate ::
+  (MonadIO m, MonadThrow m) =>
+  Pool PG.Connection ->
+  String ->
+  m ()
+migrate pool dir = do
+  migration <-
+    liftIO $
+      withResource
+        pool
+        (\conn -> PG.withTransaction conn (M.runMigrations False conn commands))
+  case migration of
+    M.MigrationError e -> 
+        throwM MigrationException
+    _ -> return ()
+  where
+    commands = [M.MigrationInitialization, M.MigrationDirectory dir]
+    namespace = "migrations"
+
+data MigrationException = MigrationException deriving (Show, Typeable)
+
+instance Exception MigrationException

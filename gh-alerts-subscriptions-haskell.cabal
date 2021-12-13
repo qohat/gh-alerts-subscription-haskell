@@ -27,6 +27,8 @@ library
   exposed-modules:
       Http.Api
       Lib
+      Postgres.Config
+      Postgres.Migration
   other-modules:
       Paths_gh_alerts_subscriptions_haskell
   hs-source-dirs:

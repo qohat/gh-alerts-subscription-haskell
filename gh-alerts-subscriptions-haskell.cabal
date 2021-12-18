@@ -25,10 +25,12 @@ source-repository head
 
 library
   exposed-modules:
+      Domain.Subscription
       Http.Api
       Lib
       Postgres.Config
       Postgres.Migration
+      Service.Subscriptions
   other-modules:
       Paths_gh_alerts_subscriptions_haskell
   hs-source-dirs:

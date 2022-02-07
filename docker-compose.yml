@@ -1,0 +1,12 @@
+
+services:
+  postgres:
+    image: postgres:13.0-alpine
+    hostname: postgres
+    ports:
+      - 5432:5432
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: haskell
+      POSTGRES_DB: github_subscription
